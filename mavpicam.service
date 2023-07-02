@@ -1,0 +1,11 @@
+[Unit]
+Description=MavPiCam
+
+[Service]
+WorkingDirectory=/home/pi/MavPiCam
+User=root
+ExecStart=/home/pi/MavPiCam/mavpicam serial:///dev/ttyCam1:115200
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

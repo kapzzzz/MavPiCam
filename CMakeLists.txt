@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(DEPS_INSTALL_PATH "/home/kapz/px4/MAVSDK/build/linux-armv7/src/mavsdk")
 
-add_definitions("-Wall -Wextra -Werror")
+add_definitions("-Wall")
 
 find_package(MAVSDK REQUIRED)
 
