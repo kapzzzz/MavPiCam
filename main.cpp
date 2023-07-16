@@ -18,7 +18,7 @@ using namespace std::chrono;
 enum class CameraMode { Idle, PhotoCapture, RecOn };
 
 void usage(const std::string& bin_name) {
-    std::cerr << "Usage : " << bin_name << " <connection_url>\n"
+    std::cerr << "Usage : " << bin_name << " <connection_url> <recording_time_ms> <framerate>\n"
               << "Connection URL format should be :\n"
               << " For TCP : tcp://[server_host][:server_port]\n"
               << " For UDP : udp://[bind_host][:bind_port]\n"
@@ -54,7 +54,7 @@ bool checkFreeDiskSpace() {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
+    if (argc != 4) {
         usage(argv[0]);
         return 1;
     }
@@ -118,13 +118,8 @@ int main(int argc, char** argv) {
                 idleLogCtr++;
                 break;
             }
-            // TODO:    free memory check and reject
-            //          specify target directory
-            //          flags
-            //          servicefile
             case CameraMode::PhotoCapture: {
                 if (checkFreeDiskSpace()) {
-                    // libcamera-jpeg -n --rotation 180 -q 99 -o test.jpg
                     std::cout << "Capturing the photo..." << std::endl;
                     std::string cmd{"libcamera-jpeg -n --rotation 180 -q 99 -o " + createFileName("jpg")};
                     auto result = std::system(cmd.c_str());
@@ -139,11 +134,9 @@ int main(int argc, char** argv) {
             case CameraMode::RecOn: {
                 if (checkFreeDiskSpace()) {
                     std::cout << "Video recording started..." << std::endl;
-                    // libcamera-vid -n --rotation 180 --height 1080 --width 1920 --hdr -t 30000 -o test.h264
-                    // --framerate 50
-                    std::string cmd{
-                        "libcamera-vid -n --rotation 180 --height 1080 --width 1920 --hdr -t 60000 --framerate 50 -o " +
-                        createFileName("h264")};
+                    std::string cmd{"libcamera-vid -n --rotation 180 --height 1080 --width 1920 --hdr -t " +
+                                    std::string(argv[2]) + " --framerate " + std::string(argv[3]) + " -o " +
+                                    createFileName("h264")};
                     auto result = std::system(cmd.c_str());
                     if (result) {
                         std::cout << "Video recording returned: " << result << std::endl;
